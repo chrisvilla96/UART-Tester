@@ -1,0 +1,16 @@
+main
+	__CC2DW
+		____DoICP
+	strcpy
+	UART1_Init
+	UART1_Write_Text
+		UART1_Write
+	UART1_Write
+	UART1_Data_Ready
+	UART1_Read_Text
+		UART1_Data_Ready
+		UART1_Read
+	strlen
+	parse_alarm_string
+		UART1_Write_Text
+			UART1_Write
