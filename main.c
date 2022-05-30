@@ -1,8 +1,17 @@
 #include <stdio.h>
-#include <string.h>
 #include "constants.h"
 
 #define TO_BOOL(X) (X > 0?1:0)
+
+// Alarm macros
+#define GET_ALARM_INDEX(X) ((X >> 3) & 0x0F);
+#define GET_ALARM_ACTIVE_STATE(X) (X & 0x1);
+#define GET_ALARM_DISPENSER_0_STATE(X) ((X >> 1) & 0x1);
+#define GET_ALARM_DISPENSER_1_STATE(X) ((X >> 2) & 0x1);
+#define GET_ALARM_DISPENSER_2_STATE(X) ((X >> 3) & 0x1);
+
+// Helper macros
+#define LESS_THAN_OR(X, Y, Z) (X < Y ? X : Z)
 
 #define LED_0 PORTB.RB0
 #define LED_1 PORTB.RB1
@@ -12,147 +21,54 @@
 #define LED_5 PORTB.RB5
 #define LED_6 PORTB.RB6
 
+char inputBuffer[ALARM_PACKET_LENGTH]; // 3 bytes
+char alarms[MAX_ALARMS * ALARM_PACKET_LENGTH]; // 30 bytes
 
-char uart_rd = 0;
-int ord(char c) { return (int)c; }
-
-char inputBuffer[FULL_PACKET_LENGTH];
-
-int alarm_hours[MAX_ALARMS];
-int alarm_minutes[MAX_ALARMS];
-int dispenser_1_states[MAX_ALARMS];
-int dispenser_2_states[MAX_ALARMS];
-int dispenser_3_states[MAX_ALARMS];
-int alarm_set_states[MAX_ALARMS];
-
-void parse_alarm_string(char alarm_string[FULL_PACKET_LENGTH]) {
-  // DO IT
-  char * alarm_base = alarm_string;
-  int index = 0;
-
-  int alarm_hour = 0;
-  int alarm_minute = 0;
-  int dispenser_1_state = 0;
-  int dispenser_2_state = 0;
-  int dispenser_3_state = 0;
-  int alarm_state = 0;
-
-  int packet_number = 0;
-  int offset;
-
-  char textBuffer[80];
-
-  for(index = 0; index <= MAX_ALARMS; index++) {
-    UART1_Write_Text("Alarm index");
-    UART1_Write(index + 0x30);
-
-    #ifdef __DEBUG__
-    UART1_Write_Text("  - Convirtiendo hora");
-    #endif
-    alarm_hour = (
-      (atoi(alarm_string[index+0]) * 10) + atoi(alarm_string[index+1])
-    );
-    #ifdef __DEBUG__
-    UART1_Write_Text("  - Convirtiendo minuto");
-    #endif
-    //UART1_Write(alarm_hour + 0x30);
-    alarm_minute = (
-      (atoi(alarm_string[index + 2]) * 10) + atoi(alarm_string[index + 3])
-    );
-    //UART1_Write(alarm_minute + 0x30);
-
-    #ifdef __DEBUG__
-    UART1_Write_Text("  - Convirtiendo dispensador 1");
-    #endif
-    dispenser_1_state = atoi(alarm_string[4]);
-    #ifdef __DEBUG__
-    UART1_Write_Text("  - Convirtiendo dispensador 2");
-    #endif
-    dispenser_2_state = atoi(alarm_string[5]);
-
-    #ifdef __DEBUG__
-    UART1_Write_Text("  - Convirtiendo dispensador 3");
-    #endif
-    dispenser_3_state = atoi(alarm_string[5]);
-
-    #ifdef __DEBUG__
-    UART1_Write_Text("  - Convirtiendo estado");
-    #endif
-    alarm_state = TO_BOOL(atoi(alarm_string[6]));
-
-    #ifdef __DEBUG__
-    UART1_Write_Text("  - Asignando estados");
-    #endif
-    alarm_hours[index] = alarm_hour;
-    alarm_minutes[index] = alarm_minute;
-    dispenser_1_states[index] = dispenser_1_state;
-    dispenser_2_states[index] = dispenser_2_state;
-    dispenser_3_states[index] = dispenser_3_state;
-    alarm_set_states[index] = alarm_state;
-
-    LED_0 = TO_BOOL(alarm_hour == 13);
-    UART1_Write(65 + alarm_hour);
-    UART1_Write(65);
-    LED_1 = alarm_minute == 11?1:0;
-    LED_2 = dispenser_1_state == 1?1:0;
-    LED_3 = dispenser_2_state == 0?1:0;
-    LED_4 = dispenser_3_state == 1?1:0;
-    LED_5 = alarm_state == 1?1:0;
-    break;
+void initialize_alarms() {
+  // Byte accounting base + 1
+  char index; 
+  for (index = 0; index <= (MAX_ALARMS * ALARM_PACKET_LENGTH); index++) {
+    alarms[index] = 0;
   }
 }
 
-void main() {
-  TRISB = 0;
+void update_alarm(char alarm_data[ALARM_PACKET_LENGTH]) {
+  // Byte accounting base + 3
+  char alarm_index = GET_ALARM_INDEX(alarm_data[0]);
 
-  LED_0 = 0;
-  LED_1 = 0;
-  LED_2 = 0;
-  LED_3 = 0;
-  LED_4 = 0;
-  LED_5 = 0;
-  LED_6 = 0;
-  Delay_ms(500);  
-  LED_6 = 1;
-
-  PORTC = 0x00;
-  TRISC = 0x80;  // PORTC.Bit7 is Input for UART.
-
-  strcpy(inputBuffer, "");
-
-  // Initialize hardware UART1 and establish communication at 9600 bps
-  UART1_Init(9600);
-  Delay_ms(100);                  // Wait for UART module to stabilize
-
-  UART1_Write_Text("Start");
-  UART1_Write(10);
-  UART1_Write(13);
-
-  while (1) {                     // Endless loop
-    if (UART1_Data_Ready() == 1) {     // If data is received,
-      // uart_rd = UART1_Read_Text(output, ",", 10);     // read the received data,
-      
-      UART1_Read_Text(inputBuffer, ";", FULL_PACKET_LENGTH + 1);
-
-      if (strlen(inputBuffer) > 0) {
-        UART1_Write_Text(inputBuffer);
-        #ifdef __DEBUG__
-        UART1_Write_Text("-P-");
-        UART1_Write_Text(inputBuffer);
-        UART1_Write_Text("-P-");
-        #endif
-
-        parse_alarm_string(inputBuffer);
-
-        strcpy(inputBuffer, "");
-      } else {
-        #ifdef __DEBUG__
-        UART1_Write_Text("Puta");
-        #endif
-      }
+  if (0 <= alarm_index && alarm_index <= MAX_ALARMS) {
+    char offset = alarm_index * ALARM_PACKET_LENGTH;
+    char index;
+    for (index = 0; index < ALARM_PACKET_LENGTH; index++) {
+      alarms[offset + index] = alarm_data[index];
     }
-    
-    //UART1_Write_Text("aa_");
-    delay_ms(250);
   }
+}
+
+void check_alarms() {
+  // Notificar el cambio en la alarma al pic secundario
+}
+
+void main() {
+  // Initialization
+  TRISB = 0;
+  //initialize_alarms();
+
+  // Alarm read loop
+  while (TRUE) {
+    if (UART1_Data_Ready() == 1) {
+      UART1_Read_Text(inputBuffer, ";", ALARM_PACKET_LENGTH + 1);
+    }
+
+    if (strlen(inputBuffer) == 3) {
+      update_alarm(inputBuffer);
+    }
+
+    check_alarms();
+    delay_ms(250);
+    inputBuffer[0] = 1;
+    alarms[0] = 1;
+  }
+
+  // Shutdown
 }
