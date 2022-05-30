@@ -11,6 +11,3 @@ main
 		UART1_Data_Ready
 		UART1_Read
 	strlen
-	parse_alarm_string
-		UART1_Write_Text
-			UART1_Write

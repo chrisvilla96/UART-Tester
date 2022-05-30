@@ -46,7 +46,10 @@ File1=UART
 File2=C_String
 File3=C_Stdlib
 File4=C_Type
-Count=5
+File5=Sprinti
+File6=Sprintl
+File7=Conversions
+Count=8
 [EXPANDED_NODES]
 0=schedulemanager.mcppi
 1=Sources

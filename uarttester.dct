@@ -12,6 +12,8 @@ __math_tempb
 __math_tempbd
 __savepclath
 __savestatus
+_doprnti
+_doprntl
 abs
 ackdt
 ackdt_bit
@@ -54,6 +56,8 @@ b4
 b5
 b6
 b7
+bcd2dec
+bcd2dec16
 bclie
 bclie_bit
 bclif
@@ -64,6 +68,9 @@ boot16_delay_5ms
 brgh
 brgh_bit
 byte2double
+bytetohex
+bytetostr
+bytetostrwithzeros
 c
 c_bit
 c1inv
@@ -168,6 +175,8 @@ data_address
 data_address_bit
 dc
 dc_bit
+dec2bcd
+dec2bcd16
 delay_100ms
 delay_10ms
 delay_10us
@@ -216,6 +225,8 @@ f
 ferr
 ferr_bit
 fixsign32
+floattostr
+floattostr_fixlen
 fsr
 fsrptr
 gcen
@@ -229,6 +240,12 @@ go_done
 go_done_bit
 go_not_done
 go_not_done_bit
+hextobyte
+hextoint
+hextolong
+hextolongint
+hextoshort
+hextoword
 ibf
 ibf_bit
 ibf_trise_bit
@@ -247,6 +264,9 @@ intedg
 intedg_bit
 intf
 intf_bit
+inttohex
+inttostr
+inttostrwithzeros
 irp
 irp_bit
 isalnum
@@ -262,7 +282,14 @@ isxdigit
 labs
 ldiv
 longint2double
+longinttohex
+longinttostrwithzeros
+longtostr
 longword2double
+longwordtohex
+longwordtostr
+longwordtostrwithzeros
+ltrim
 main
 max
 memchr
@@ -477,6 +504,7 @@ rp1
 rp1_bit
 rsen
 rsen_bit
+rtrim
 rx9
 rx9_bit
 rx9d
@@ -490,6 +518,9 @@ setfdz32
 setfov32
 setfun32
 setiov3224
+shorttohex
+shorttostr
+shorttostrwithzeros
 smp
 smp_bit
 soft_uart_break
@@ -499,6 +530,8 @@ soft_uart_write
 spbrg
 spen
 spen_bit
+sprinti
+sprintl
 srand
 sren
 sren_bit
@@ -543,7 +576,14 @@ strpbrk
 strrchr
 strspn
 strstr
+strtobyte
+strtofloat
+strtoint
 strtok
+strtolong
+strtolongint
+strtoshort
+strtoword
 sub_32x32_fp
 swap
 sync
@@ -710,6 +750,9 @@ w
 wcol
 wcol_bit
 word2double
+wordtohex
+wordtostr
+wordtostrwithzeros
 wr
 wr_bit
 wren
