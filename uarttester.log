@@ -1,6 +1,18 @@
-0	1	mikroCPIC1618.exe -MSF -DBG -pP16F877A -DL -O11111114 -fo8 -N"C:\Users\52551\Documents\Graduation-Project\UART-Tester\uarttester.mcppi" -SP"C:\Users\Public\Documents\Mikroelektronika\mikroC PRO for PIC\Defs\" -SP"C:\Users\Public\Documents\Mikroelektronika\mikroC PRO for PIC\Uses\P16\" -SP"C:\Users\52551\Documents\Graduation-Project\UART-Tester\" -IP"C:\Users\Public\Documents\Mikroelektronika\mikroC PRO for PIC\Uses\P16\" "main.c" "__Lib_Math.mcl" "__Lib_MathDouble.mcl" "__Lib_System.mcl" "__Lib_Delays.mcl" "__Lib_CType.mcl" "__Lib_CString.mcl" "__Lib_CStdlib.mcl" "__Lib_Conversions.mcl" "__Lib_Sprinti.mcl" "__Lib_Sprintl.mcl" "__Lib_SoftUART.mcl" "__Lib_UART_c67.mcl"	 
+0	1	mikroCPIC1618.exe -MSF -DBG -pP16F877A -DL -O11111114 -fo8 -N"C:\Users\Chris\Documents\Graduation-Project\UART-Tester\uarttester.mcppi" -SP"C:\Users\Public\Documents\Mikroelektronika\mikroC PRO for PIC\Defs\" -SP"C:\Users\Public\Documents\Mikroelektronika\mikroC PRO for PIC\Uses\P16\" -SP"C:\Users\Chris\Documents\Graduation-Project\UART-Tester\" -IP"C:\Users\Public\Documents\Mikroelektronika\mikroC PRO for PIC\Uses\P16\" "main.c" "ds1307.c" "__Lib_Math.mcl" "__Lib_MathDouble.mcl" "__Lib_System.mcl" "__Lib_Delays.mcl" "__Lib_CType.mcl" "__Lib_CString.mcl" "__Lib_CStdlib.mcl" "__Lib_Conversions.mcl" "__Lib_Sprinti.mcl" "__Lib_Sprintl.mcl" "__Lib_SoftUART.mcl" "__Lib_I2C_c34.mcl" "__Lib_UART_c67.mcl"	 
 hint: 0	1139	Available RAM: 352 [bytes], Available ROM: 8192 [bytes]	 
 diagnostics: 0	122	Compilation Started	main.c
-error: 40	324	Undeclared identifier 'alarmIndex' in expression	main.c
-error: 40	324	Undeclared identifier 'FULL_PACKET_LENGTH' in expression	main.c
-error: 0	102	Finished (with errors): 29 may. 2022, 21:38:23	uarttester.mcppi
+hint: 68	1163	Variable 'index' has been declared, but not used	main.c
+hint: 97	1163	Variable 'hours' has been declared, but not used	main.c
+hint: 98	1163	Variable 'minutes' has been declared, but not used	main.c
+hint: 99	1163	Variable 'index' has been declared, but not used	main.c
+warning: 127	1509	Generated baud rate is 9615 bps (error = 0.16 percent)	main.c
+diagnostics: 153	123	Compiled Successfully	main.c
+diagnostics: 0	122	Compilation Started	ds1307.c
+diagnostics: 65	123	Compiled Successfully	ds1307.c
+diagnostics: 0	127	All files Compiled in 641 ms	 
+hint: 0	1144	Used RAM (bytes): 136 (39%)  Free RAM (bytes): 216 (61%)	Used RAM (bytes): 136 (39%)  Free RAM (bytes): 216 (61%)
+hint: 0	1144	Used ROM (program words): 459 (6%)  Free ROM (program words): 7733 (94%)	Used ROM (program words): 459 (6%)  Free ROM (program words): 7733 (94%)
+diagnostics: 0	125	Project Linked Successfully	uarttester.mcppi
+diagnostics: 0	128	Linked in 656 ms	 
+diagnostics: 0	129	Project 'uarttester.mcppi' completed: 1469 ms	 
+diagnostics: 0	103	Finished successfully: 30 may. 2022, 15:28:05	uarttester.mcppi
