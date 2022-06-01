@@ -68,6 +68,7 @@ void check_alarms() {
   char hours;
   char minutes;
   char index;
+  char segundos;
 
   // segundos = Bcd2Dec(read_ds1307(0xD0, 0));
   // minutos = Bcd2Dec(read_ds1307(0xD0, 1));
@@ -93,12 +94,14 @@ void check_alarms() {
 
       alarm_index += 3;
     }
+    /*
     for (alarm in alarms) {
       if (matches hour and minute)
       (FLAGS >> 1) & 0x07
       activate_dispensers(flags);
       delay_ms(1000);
   }
+  */
   
   /// Keep going
   
