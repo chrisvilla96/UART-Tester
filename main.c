@@ -5,7 +5,18 @@
   En caso de que sea 'a', se enciende el LED en RB7
 */
 
-#define LED PORTB.RB7
+#define LED PORTB.RB7 // PIN 40
+
+void led_routine() {
+  int i;
+  for (i=0; i<2; i++){
+    LED = 1;
+    delay_ms(1000);
+    LED = 0;
+    delay_ms(1000);
+    /* code */
+  }
+}
 
 char dato;
 
@@ -19,6 +30,8 @@ void main() {
   UART1_Init(9600);
   UART1_Write_Text("Inicializado");
   delay_ms(100);
+
+  led_routine();
 
   while (1) {
     

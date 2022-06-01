@@ -27,7 +27,6 @@ acken
 acken_bit
 ackstat
 ackstat_bit
-activate_dispensers
 adcon0
 adcon1
 adcs0
@@ -49,7 +48,6 @@ adon
 adon_bit
 adresh
 adresl
-alarms
 atof
 atoi
 atol
@@ -126,7 +124,6 @@ ccpr1l
 ccpr2
 ccpr2h
 ccpr2l
-check_alarms
 chs0
 chs0_bit
 chs1
@@ -179,6 +176,7 @@ d_not_a
 d_not_a_bit
 data_address
 data_address_bit
+dato
 dc
 dc_bit
 dec2bcd
@@ -280,8 +278,6 @@ ibov_trise_bit
 ics_auto
 ics_off
 indf
-initialize_alarms
-inputbuffer
 int2double
 intcon
 inte
@@ -307,6 +303,7 @@ isupper
 isxdigit
 labs
 ldiv
+led_routine
 longint2double
 longinttohex
 longinttostrwithzeros
@@ -769,7 +766,6 @@ uart1_tx_idle
 uart1_write
 uart1_write_text
 uldiv
-update_alarm
 vdelay_advanced_ms
 vdelay_ms
 w
