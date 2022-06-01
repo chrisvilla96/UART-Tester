@@ -11,10 +11,10 @@ L_initialize_alarms0:
 	MOVLW      128
 	SUBWF      R0+0, 0
 	BTFSS      STATUS+0, 2
-	GOTO       L__initialize_alarms14
+	GOTO       L__initialize_alarms22
 	MOVF       R1+0, 0
 	SUBLW      30
-L__initialize_alarms14:
+L__initialize_alarms22:
 	BTFSS      STATUS+0, 0
 	GOTO       L_initialize_alarms1
 ;main.c,39 :: 		alarms[index] = 0;
@@ -39,34 +39,33 @@ _update_alarm:
 	MOVF       FARG_update_alarm_alarm_data+0, 0
 	MOVWF      FSR
 	MOVF       INDF+0, 0
+	MOVWF      R2+0
+	MOVF       R2+0, 0
+	MOVWF      R0+0
+	RRF        R0+0, 1
+	BCF        R0+0, 7
+	RRF        R0+0, 1
+	BCF        R0+0, 7
+	RRF        R0+0, 1
+	BCF        R0+0, 7
+	RRF        R0+0, 1
+	BCF        R0+0, 7
+	MOVLW      15
+	ANDWF      R0+0, 0
 	MOVWF      R1+0
 	MOVF       R1+0, 0
 	MOVWF      update_alarm_alarm_index_L0+0
-	RRF        update_alarm_alarm_index_L0+0, 1
-	BCF        update_alarm_alarm_index_L0+0, 7
-	RRF        update_alarm_alarm_index_L0+0, 1
-	BCF        update_alarm_alarm_index_L0+0, 7
-	RRF        update_alarm_alarm_index_L0+0, 1
-	BCF        update_alarm_alarm_index_L0+0, 7
-	RRF        update_alarm_alarm_index_L0+0, 1
-	BCF        update_alarm_alarm_index_L0+0, 7
-	MOVLW      15
-	ANDWF      update_alarm_alarm_index_L0+0, 1
-;main.c,65 :: 		UART1_Write_Text("Revisando indice");
-	MOVLW      ?lstr1_main+0
-	MOVWF      FARG_UART1_Write_Text_uart_text+0
-	CALL       _UART1_Write_Text+0
-;main.c,66 :: 		if (0 <= alarm_index && alarm_index <= MAX_ALARMS) {
+;main.c,49 :: 		if (0 <= alarm_index && alarm_index <= MAX_ALARMS) {
 	MOVLW      0
-	SUBWF      update_alarm_alarm_index_L0+0, 0
+	SUBWF      R1+0, 0
 	BTFSS      STATUS+0, 0
 	GOTO       L_update_alarm5
 	MOVF       update_alarm_alarm_index_L0+0, 0
 	SUBLW      10
 	BTFSS      STATUS+0, 0
 	GOTO       L_update_alarm5
-L__update_alarm12:
-;main.c,67 :: 		char offset = alarm_index * ALARM_PACKET_LENGTH;
+L__update_alarm20:
+;main.c,50 :: 		char offset = alarm_index * ALARM_PACKET_LENGTH;
 	MOVF       update_alarm_alarm_index_L0+0, 0
 	MOVWF      R0+0
 	MOVLW      3
@@ -74,14 +73,9 @@ L__update_alarm12:
 	CALL       _Mul_8X8_U+0
 	MOVF       R0+0, 0
 	MOVWF      update_alarm_offset_L1+0
-;main.c,69 :: 		UART1_Write_Text("Alarma encontrada");
-	MOVLW      ?lstr2_main+0
-	MOVWF      FARG_UART1_Write_Text_uart_text+0
-	CALL       _UART1_Write_Text+0
-;main.c,71 :: 		alarms[offset + ALARM_FLAG_BYTE_OFFSET] = alarm_data[ALARM_FLAG_BYTE_OFFSET];
-	MOVF       update_alarm_offset_L1+0, 0
-	MOVWF      R0+0
-	CLRF       R0+1
+;main.c,53 :: 		alarms[offset + ALARM_FLAG_BYTE_OFFSET] = alarm_data[ALARM_FLAG_BYTE_OFFSET];
+	MOVLW      0
+	MOVWF      R0+1
 	MOVF       R0+0, 0
 	ADDLW      _alarms+0
 	MOVWF      R1+0
@@ -93,7 +87,7 @@ L__update_alarm12:
 	MOVWF      FSR
 	MOVF       R0+0, 0
 	MOVWF      INDF+0
-;main.c,72 :: 		alarms[offset + ALARM_HOUR_BYTE_OFFSET] = Bcd2Dec(
+;main.c,54 :: 		alarms[offset + ALARM_HOUR_BYTE_OFFSET] = Bcd2Dec(
 	MOVF       update_alarm_offset_L1+0, 0
 	ADDLW      1
 	MOVWF      R0+0
@@ -103,18 +97,18 @@ L__update_alarm12:
 	MOVF       R0+0, 0
 	ADDLW      _alarms+0
 	MOVWF      FLOC__update_alarm+0
-;main.c,73 :: 		alarm_data[ALARM_HOUR_BYTE_OFFSET]
+;main.c,55 :: 		alarm_data[ALARM_HOUR_BYTE_OFFSET]
 	INCF       FARG_update_alarm_alarm_data+0, 0
 	MOVWF      FSR
 	MOVF       INDF+0, 0
 	MOVWF      FARG_Bcd2Dec_bcdnum+0
 	CALL       _Bcd2Dec+0
-;main.c,74 :: 		);
+;main.c,56 :: 		);
 	MOVF       FLOC__update_alarm+0, 0
 	MOVWF      FSR
 	MOVF       R0+0, 0
 	MOVWF      INDF+0
-;main.c,75 :: 		alarms[offset + ALARM_MINUTE_BYTE_OFFSET] = Bcd2Dec(
+;main.c,57 :: 		alarms[offset + ALARM_MINUTE_BYTE_OFFSET] = Bcd2Dec(
 	MOVLW      2
 	ADDWF      update_alarm_offset_L1+0, 0
 	MOVWF      R0+0
@@ -124,31 +118,119 @@ L__update_alarm12:
 	MOVF       R0+0, 0
 	ADDLW      _alarms+0
 	MOVWF      FLOC__update_alarm+0
-;main.c,76 :: 		alarm_data[ALARM_MINUTE_BYTE_OFFSET]
+;main.c,58 :: 		alarm_data[ALARM_MINUTE_BYTE_OFFSET]
 	MOVLW      2
 	ADDWF      FARG_update_alarm_alarm_data+0, 0
 	MOVWF      FSR
 	MOVF       INDF+0, 0
 	MOVWF      FARG_Bcd2Dec_bcdnum+0
 	CALL       _Bcd2Dec+0
-;main.c,77 :: 		);
+;main.c,59 :: 		);
 	MOVF       FLOC__update_alarm+0, 0
 	MOVWF      FSR
 	MOVF       R0+0, 0
 	MOVWF      INDF+0
-;main.c,81 :: 		PORTB = alarms[offset + ALARM_FLAG_BYTE_OFFSET];
-	MOVF       update_alarm_offset_L1+0, 0
-	MOVWF      R0+0
-	CLRF       R0+1
-	MOVF       R0+0, 0
-	ADDLW      _alarms+0
+;main.c,61 :: 		PORTB = 0xff;
+	MOVLW      255
+	MOVWF      PORTB+0
+;main.c,62 :: 		delay_ms(75);
+	MOVLW      195
+	MOVWF      R12+0
+	MOVLW      205
+	MOVWF      R13+0
+L_update_alarm6:
+	DECFSZ     R13+0, 1
+	GOTO       L_update_alarm6
+	DECFSZ     R12+0, 1
+	GOTO       L_update_alarm6
+;main.c,64 :: 		PORTB = 0x00;
+	CLRF       PORTB+0
+;main.c,65 :: 		delay_ms(75);
+	MOVLW      195
+	MOVWF      R12+0
+	MOVLW      205
+	MOVWF      R13+0
+L_update_alarm7:
+	DECFSZ     R13+0, 1
+	GOTO       L_update_alarm7
+	DECFSZ     R12+0, 1
+	GOTO       L_update_alarm7
+;main.c,67 :: 		PORTB = 0xff;
+	MOVLW      255
+	MOVWF      PORTB+0
+;main.c,68 :: 		delay_ms(75);
+	MOVLW      195
+	MOVWF      R12+0
+	MOVLW      205
+	MOVWF      R13+0
+L_update_alarm8:
+	DECFSZ     R13+0, 1
+	GOTO       L_update_alarm8
+	DECFSZ     R12+0, 1
+	GOTO       L_update_alarm8
+;main.c,70 :: 		PORTB = 0x00;
+	CLRF       PORTB+0
+;main.c,71 :: 		delay_ms(75);
+	MOVLW      195
+	MOVWF      R12+0
+	MOVLW      205
+	MOVWF      R13+0
+L_update_alarm9:
+	DECFSZ     R13+0, 1
+	GOTO       L_update_alarm9
+	DECFSZ     R12+0, 1
+	GOTO       L_update_alarm9
+;main.c,73 :: 		PORTB = 0xff;
+	MOVLW      255
+	MOVWF      PORTB+0
+;main.c,74 :: 		delay_ms(75);
+	MOVLW      195
+	MOVWF      R12+0
+	MOVLW      205
+	MOVWF      R13+0
+L_update_alarm10:
+	DECFSZ     R13+0, 1
+	GOTO       L_update_alarm10
+	DECFSZ     R12+0, 1
+	GOTO       L_update_alarm10
+;main.c,76 :: 		PORTB = 0x00;
+	CLRF       PORTB+0
+;main.c,77 :: 		delay_ms(75);
+	MOVLW      195
+	MOVWF      R12+0
+	MOVLW      205
+	MOVWF      R13+0
+L_update_alarm11:
+	DECFSZ     R13+0, 1
+	GOTO       L_update_alarm11
+	DECFSZ     R12+0, 1
+	GOTO       L_update_alarm11
+;main.c,79 :: 		PORTB = alarm_data[ALARM_FLAG_BYTE_OFFSET];
+	MOVF       FARG_update_alarm_alarm_data+0, 0
 	MOVWF      FSR
 	MOVF       INDF+0, 0
 	MOVWF      PORTB+0
-;main.c,82 :: 		UART1_Write_Text("Flags");
-	MOVLW      ?lstr3_main+0
-	MOVWF      FARG_UART1_Write_Text_uart_text+0
-	CALL       _UART1_Write_Text+0
+;main.c,80 :: 		delay_ms(1500);
+	MOVLW      16
+	MOVWF      R11+0
+	MOVLW      57
+	MOVWF      R12+0
+	MOVLW      13
+	MOVWF      R13+0
+L_update_alarm12:
+	DECFSZ     R13+0, 1
+	GOTO       L_update_alarm12
+	DECFSZ     R12+0, 1
+	GOTO       L_update_alarm12
+	DECFSZ     R11+0, 1
+	GOTO       L_update_alarm12
+	NOP
+	NOP
+;main.c,82 :: 		PORTB = alarm_data[ALARM_HOUR_BYTE_OFFSET];
+	INCF       FARG_update_alarm_alarm_data+0, 0
+	MOVWF      FSR
+	MOVF       INDF+0, 0
+	MOVWF      PORTB+0
 ;main.c,83 :: 		delay_ms(1500);
 	MOVLW      16
 	MOVWF      R11+0
@@ -156,152 +238,139 @@ L__update_alarm12:
 	MOVWF      R12+0
 	MOVLW      13
 	MOVWF      R13+0
-L_update_alarm6:
+L_update_alarm13:
 	DECFSZ     R13+0, 1
-	GOTO       L_update_alarm6
+	GOTO       L_update_alarm13
 	DECFSZ     R12+0, 1
-	GOTO       L_update_alarm6
+	GOTO       L_update_alarm13
 	DECFSZ     R11+0, 1
-	GOTO       L_update_alarm6
+	GOTO       L_update_alarm13
 	NOP
 	NOP
-;main.c,85 :: 		PORTB = alarms[offset + ALARM_HOUR_BYTE_OFFSET];
-	MOVF       update_alarm_offset_L1+0, 0
-	ADDLW      1
-	MOVWF      R0+0
-	CLRF       R0+1
-	BTFSC      STATUS+0, 0
-	INCF       R0+1, 1
-	MOVF       R0+0, 0
-	ADDLW      _alarms+0
-	MOVWF      FSR
-	MOVF       INDF+0, 0
-	MOVWF      PORTB+0
-;main.c,86 :: 		UART1_Write_Text("Hora");
-	MOVLW      ?lstr4_main+0
-	MOVWF      FARG_UART1_Write_Text_uart_text+0
-	CALL       _UART1_Write_Text+0
-;main.c,87 :: 		delay_ms(1500);
-	MOVLW      16
-	MOVWF      R11+0
-	MOVLW      57
-	MOVWF      R12+0
-	MOVLW      13
-	MOVWF      R13+0
-L_update_alarm7:
-	DECFSZ     R13+0, 1
-	GOTO       L_update_alarm7
-	DECFSZ     R12+0, 1
-	GOTO       L_update_alarm7
-	DECFSZ     R11+0, 1
-	GOTO       L_update_alarm7
-	NOP
-	NOP
-;main.c,89 :: 		PORTB = alarms[offset + ALARM_MINUTE_BYTE_OFFSET];
+;main.c,85 :: 		PORTB = alarm_data[ALARM_MINUTE_BYTE_OFFSET];
 	MOVLW      2
-	ADDWF      update_alarm_offset_L1+0, 0
-	MOVWF      R0+0
-	CLRF       R0+1
-	BTFSC      STATUS+0, 0
-	INCF       R0+1, 1
-	MOVF       R0+0, 0
-	ADDLW      _alarms+0
+	ADDWF      FARG_update_alarm_alarm_data+0, 0
 	MOVWF      FSR
 	MOVF       INDF+0, 0
 	MOVWF      PORTB+0
-;main.c,90 :: 		UART1_Write_Text("Minutos");
-	MOVLW      ?lstr5_main+0
-	MOVWF      FARG_UART1_Write_Text_uart_text+0
-	CALL       _UART1_Write_Text+0
-;main.c,91 :: 		delay_ms(1500);
+;main.c,86 :: 		delay_ms(1500);
 	MOVLW      16
 	MOVWF      R11+0
 	MOVLW      57
 	MOVWF      R12+0
 	MOVLW      13
 	MOVWF      R13+0
-L_update_alarm8:
+L_update_alarm14:
 	DECFSZ     R13+0, 1
-	GOTO       L_update_alarm8
+	GOTO       L_update_alarm14
 	DECFSZ     R12+0, 1
-	GOTO       L_update_alarm8
+	GOTO       L_update_alarm14
 	DECFSZ     R11+0, 1
-	GOTO       L_update_alarm8
+	GOTO       L_update_alarm14
 	NOP
 	NOP
-;main.c,93 :: 		}
+;main.c,87 :: 		}
 L_update_alarm5:
-;main.c,94 :: 		}
+;main.c,88 :: 		}
 L_end_update_alarm:
 	RETURN
 ; end of _update_alarm
 
+_activate_dispensers:
+
+;main.c,90 :: 		void activate_dispensers(char dispenser_flags) {
+;main.c,91 :: 		PORTB = dispenser_flags;
+	MOVF       FARG_activate_dispensers_dispenser_flags+0, 0
+	MOVWF      PORTB+0
+;main.c,92 :: 		}
+L_end_activate_dispensers:
+	RETURN
+; end of _activate_dispensers
+
 _check_alarms:
 
-;main.c,96 :: 		void check_alarms() {
-;main.c,118 :: 		}
+;main.c,94 :: 		void check_alarms() {
+;main.c,158 :: 		}
 L_end_check_alarms:
 	RETURN
 ; end of _check_alarms
 
 _main:
 
-;main.c,120 :: 		void main() {
-;main.c,123 :: 		TRISB = 0;
+;main.c,160 :: 		void main() {
+;main.c,163 :: 		TRISB = 0;
 	CLRF       TRISB+0
-;main.c,124 :: 		PORTB = 0x00;
+;main.c,164 :: 		PORTB = 0x00;
 	CLRF       PORTB+0
-;main.c,127 :: 		UART1_Init(9600);
+;main.c,167 :: 		UART1_Init(9600);
 	MOVLW      51
 	MOVWF      SPBRG+0
 	BSF        TXSTA+0, 2
 	CALL       _UART1_Init+0
-;main.c,128 :: 		UART1_Write_Text("Inicializado");
-	MOVLW      ?lstr6_main+0
+;main.c,168 :: 		UART1_Write_Text("Inicializado");
+	MOVLW      ?lstr1_main+0
 	MOVWF      FARG_UART1_Write_Text_uart_text+0
 	CALL       _UART1_Write_Text+0
-;main.c,130 :: 		while (TRUE) {
-L_main9:
-;main.c,131 :: 		UART1_Write_Text("Main loop");
-	MOVLW      ?lstr7_main+0
+;main.c,170 :: 		while (TRUE) {
+L_main15:
+;main.c,171 :: 		UART1_Write_Text("Main loop");
+	MOVLW      ?lstr2_main+0
 	MOVWF      FARG_UART1_Write_Text_uart_text+0
 	CALL       _UART1_Write_Text+0
-;main.c,143 :: 		delay_ms(250);
+;main.c,173 :: 		if (UART1_Data_Ready() == 1) {
+	CALL       _UART1_Data_Ready+0
+	MOVF       R0+0, 0
+	XORLW      1
+	BTFSS      STATUS+0, 2
+	GOTO       L_main17
+;main.c,174 :: 		UART1_Read_Text(inputBuffer, ";", ALARM_PACKET_LENGTH + 1);
+	MOVLW      _inputBuffer+0
+	MOVWF      FARG_UART1_Read_Text_Output+0
+	MOVLW      ?lstr3_main+0
+	MOVWF      FARG_UART1_Read_Text_Delimiter+0
+	MOVLW      4
+	MOVWF      FARG_UART1_Read_Text_Attempts+0
+	CALL       _UART1_Read_Text+0
+;main.c,175 :: 		}
+L_main17:
+;main.c,177 :: 		if (strlen(inputBuffer) == 3) {
+	MOVLW      _inputBuffer+0
+	MOVWF      FARG_strlen_s+0
+	CALL       _strlen+0
+	MOVLW      0
+	XORWF      R0+1, 0
+	BTFSS      STATUS+0, 2
+	GOTO       L__main27
+	MOVLW      3
+	XORWF      R0+0, 0
+L__main27:
+	BTFSS      STATUS+0, 2
+	GOTO       L_main18
+;main.c,178 :: 		update_alarm(inputBuffer);
+	MOVLW      _inputBuffer+0
+	MOVWF      FARG_update_alarm_alarm_data+0
+	CALL       _update_alarm+0
+;main.c,179 :: 		}
+L_main18:
+;main.c,182 :: 		delay_ms(250);
 	MOVLW      3
 	MOVWF      R11+0
 	MOVLW      138
 	MOVWF      R12+0
 	MOVLW      85
 	MOVWF      R13+0
-L_main11:
+L_main19:
 	DECFSZ     R13+0, 1
-	GOTO       L_main11
+	GOTO       L_main19
 	DECFSZ     R12+0, 1
-	GOTO       L_main11
+	GOTO       L_main19
 	DECFSZ     R11+0, 1
-	GOTO       L_main11
+	GOTO       L_main19
 	NOP
 	NOP
-;main.c,146 :: 		fakeAlarm[0] = 0x5D; // 0101 1101
-	MOVLW      93
-	MOVWF      main_fakeAlarm_L0+0
-;main.c,147 :: 		fakeAlarm[1] = 0x11;
-	MOVLW      17
-	MOVWF      main_fakeAlarm_L0+1
-;main.c,148 :: 		fakeAlarm[2] = 0x35;
-	MOVLW      53
-	MOVWF      main_fakeAlarm_L0+2
-;main.c,149 :: 		UART1_Write_Text("Enviando alarma");
-	MOVLW      ?lstr8_main+0
-	MOVWF      FARG_UART1_Write_Text_uart_text+0
-	CALL       _UART1_Write_Text+0
-;main.c,150 :: 		update_alarm(fakeAlarm);
-	MOVLW      main_fakeAlarm_L0+0
-	MOVWF      FARG_update_alarm_alarm_data+0
-	CALL       _update_alarm+0
-;main.c,151 :: 		}
-	GOTO       L_main9
-;main.c,153 :: 		}
+;main.c,183 :: 		}
+	GOTO       L_main15
+;main.c,184 :: 		}
 L_end_main:
 	GOTO       $+0
 ; end of _main

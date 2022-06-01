@@ -4,9 +4,12 @@ main
 	UART1_Init
 	UART1_Write_Text
 		UART1_Write
+	UART1_Data_Ready
+	UART1_Read_Text
+		UART1_Data_Ready
+		UART1_Read
+	strlen
 	update_alarm
-		UART1_Write_Text
-			UART1_Write
 		Mul_8X8_U
 		Bcd2Dec
 			Mul_8X8_U
