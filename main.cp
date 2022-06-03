@@ -105,35 +105,41 @@ void initialize_alarms() {
 
 
 
-void update_alarm(char alarm_data[ 3 ]) {
+void update_alarm(char alarm[ 3 ])
+{
 
- char alarm_index =  ((alarm_data[0] >> 4) & 0x0F); ;
+ char alarm_flags;
+ char alarm_hour;
+ char alarm_minute;
 
- if (0 <= alarm_index && alarm_index <=  10 ) {
- char offset = alarm_index *  3 ;
+ char alarm_index;
 
- alarms[offset +  0 ] = alarm_data[ 0 ];
- alarms[offset +  1 ] = alarm_data[ 1 ];
- alarms[offset +  2 ] = alarm_data[ 2 ];
-#line 114 "C:/Users/Chris/Documents/Graduation-Project/UART-Tester/main.c"
- Lcd_out(2, 1, "SA_");
- Lcd_chr_cp(Bcd2Dec(alarm_data[0]) / 10 + 0x30);
- Lcd_chr_cp(Bcd2Dec(alarm_data[0]) % 10 + 0x30);
- Lcd_chr_cp(Bcd2Dec(alarm_data[1]) / 10 + 0x30);
- Lcd_chr_cp(Bcd2Dec(alarm_data[1]) % 10 + 0x30);
- Lcd_chr_cp(Bcd2Dec(alarm_data[2]) / 10 + 0x30);
- Lcd_chr_cp(Bcd2Dec(alarm_data[2]) % 10 + 0x30);
- Lcd_chr_cp('|');
- delay_ms(2000);
- }
+ alarm_flags = alarm[0];
+ alarm_hour = alarm[1];
+ alarm_minute = alarm[2];
 
 
 
 
- PORTB = 0x0F;
- delay_ms(500);
- PORTB = 0x00;
- delay_ms(500);
+ writeBCDToLCD(alarm_flags);
+ writeBytesToLCD(alarm_flags);
+
+ writeBCDToLCD(alarm_hour);
+ writeBytesToLCD(alarm_hour);
+ writeBCDToLCD(alarm_minute);
+ writeBytesToLCD(alarm_minute);
+
+
+
+ writeBCDToLCD(alarm_flags);
+ writeBytesToLCD(alarm_flags);
+
+ writeBytesToLCD(alarm_flags >> 0);
+ writeBytesToLCD(alarm_flags >> 1);
+ writeBytesToLCD(alarm_flags >> 2);
+ writeBytesToLCD(alarm_flags >> 3);
+ writeBytesToLCD(alarm_flags >> 4);
+#line 161 "C:/Users/Chris/Documents/Graduation-Project/UART-Tester/main.c"
 }
 
 
@@ -157,53 +163,30 @@ void check_alarms() {
  hours = read_ds1307(0xD0, 2);
 
  if (seconds == 0x00) {
- Lcd_out(2, 1, "Estamos en 0 segundos");
 
  for (alarm_index = 0; alarm_index <=  10 ; alarm_index++) {
  char current_alarm_hour;
  char current_alarm_minute;
  char otro;
 
- Lcd_out(2, 1, "CA");
- Lcd_chr_cp(alarm_index + 0x30);
- Lcd_chr_cp(((alarms[alarm_index +  0 ] >> 7) & 0x01) + 0x30);
- Lcd_chr_cp(((alarms[alarm_index +  0 ] >> 6) & 0x01) + 0x30);
- Lcd_chr_cp(((alarms[alarm_index +  0 ] >> 5) & 0x01) + 0x30);
- Lcd_chr_cp(((alarms[alarm_index +  0 ] >> 4) & 0x01) + 0x30);
- Lcd_chr_cp(((alarms[alarm_index +  0 ] >> 3) & 0x01) + 0x30);
- Lcd_chr_cp(((alarms[alarm_index +  0 ] >> 2) & 0x01) + 0x30);
- Lcd_chr_cp(((alarms[alarm_index +  0 ] >> 1) & 0x01) + 0x30);
- Lcd_chr_cp(((alarms[alarm_index +  0 ] >> 0) & 0x01) + 0x30);
- delay_ms(1000);
+
+ char current_alarm_flags = alarms[alarm_index +  0 ];
+
+ writeBytesToLCD(current_alarm_flags);
+ writeBCDToLCD(current_alarm_flags);
 
  if (!(alarms[alarm_index +  0 ] &  0 )) {
  continue;
  }
 
- Lcd_out(2, 1, "alrm actv");
- Lcd_chr_cp(alarm_index + 0x30);
- delay_ms(1000);
-
 
  current_alarm_hour = alarms[alarm_index +  1 ];
  current_alarm_minute = alarms[alarm_index +  1 ];
 
- Lcd_out(2, 1, "t:");
- Lcd_chr_cp(Bcd2Dec(current_alarm_hour) / 10 + 0x30);
- Lcd_chr_cp(Bcd2Dec(current_alarm_minute) % 10 + 0x30);
- Lcd_chr_cp(Bcd2Dec(current_alarm_minute) / 10 + 0x30);
- Lcd_chr_cp(Bcd2Dec(current_alarm_minute) % 10 + 0x30);
- Lcd_chr_cp(',');
- Lcd_chr_cp(Bcd2Dec(hours) / 10 + 0x30);
- Lcd_chr_cp(Bcd2Dec(hours) % 10 + 0x30);
- Lcd_chr_cp(Bcd2Dec(minutes) / 10 + 0x30);
- Lcd_chr_cp(Bcd2Dec(minutes) % 10 + 0x30);
- delay_ms(1000);
-
 
  if (current_alarm_hour == hours && current_alarm_minute == minutes) {
 
- char current_alarm_flags = alarms[alarm_index +  0 ];
+
 
  current_alarm_flags = (current_alarm_flags >> 1) & 0x07;
 
@@ -223,12 +206,12 @@ void check_ds1307() {
  PORTB = seconds;
  delay_ms(1000);
  }
-#line 243 "C:/Users/Chris/Documents/Graduation-Project/UART-Tester/main.c"
+#line 249 "C:/Users/Chris/Documents/Graduation-Project/UART-Tester/main.c"
 }
 
 
 void sends_data_to_lcd(char second, char minute, char hour) {
-#line 258 "C:/Users/Chris/Documents/Graduation-Project/UART-Tester/main.c"
+#line 264 "C:/Users/Chris/Documents/Graduation-Project/UART-Tester/main.c"
  Lcd_out(1, 1, "HORA: ");
  Lcd_chr_cp(Bcd2Dec(hour)/10 + 0x30);
  Lcd_chr_cp(Bcd2Dec(hour)%10 + 0x30);
@@ -297,20 +280,24 @@ void main() {
  fakeAlarm[1] = 0x11;
  fakeAlarm[2] = 0x35;
 
+ writeBCDToLCD(fakeAlarm[0]);
+ writeBytesToLCD(fakeAlarm[0]);
+
 
  delay_ms(1500);
  UART1_Write_Text("Enviando alarma");
+
  update_alarm(fakeAlarm);
 
 
- writeBytesToLCD(fakeAlarm[0]);
- writeBCDToLCD(fakeAlarm[0]);
+
+
 
 
 
  while ( 1 )
  {
-#line 361 "C:/Users/Chris/Documents/Graduation-Project/UART-Tester/main.c"
+#line 371 "C:/Users/Chris/Documents/Graduation-Project/UART-Tester/main.c"
  check_alarms();
  delay_ms(500);
  }

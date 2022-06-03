@@ -91,17 +91,46 @@ void initialize_alarms() {
 
 
 // Updates alarms array by receiving a packet lengths
-void update_alarm(char alarm_data[ALARM_PACKET_LENGTH]) {
+void update_alarm(char alarm[ALARM_PACKET_LENGTH]) {
   // Byte accounting base + 3
-  char alarm_index = GET_ALARM_INDEX(alarm_data[0]);
+  char alarm_flags;
+  char alarm_hour;
+  char alarm_minute;
+  
+  char alarm_index;
 
+  alarm_flags = alarm[0];
+  alarm_hour = alarm[1];
+  alarm_minute = alarm[2];
+
+  
+  // char alarm_index = GET_ALARM_INDEX(alarm_data[0]);
+  // char alarm_index = ((alarm_data[0] >> 4) & 0x0F);
+  writeBCDToLCD(alarm_flags);
+  writeBytesToLCD(alarm_flags);
+
+  writeBCDToLCD(alarm_hour);
+  writeBytesToLCD(alarm_hour);
+  writeBCDToLCD(alarm_minute);
+  writeBytesToLCD(alarm_minute);
+
+  // alarm_index = alarm[ALARM_FLAG_BYTE_OFFSET];
+
+  writeBCDToLCD(alarm_flags);
+  writeBytesToLCD(alarm_flags);
+
+  writeBytesToLCD(alarm_flags >> 0);
+  writeBytesToLCD(alarm_flags >> 1);
+  writeBytesToLCD(alarm_flags >> 2);
+  writeBytesToLCD(alarm_flags >> 3);
+  writeBytesToLCD(alarm_flags >> 4);
+ 
   if (0 <= alarm_index && alarm_index <= MAX_ALARMS) {
     char offset = alarm_index * ALARM_PACKET_LENGTH;
 
     alarms[offset + ALARM_FLAG_BYTE_OFFSET] = alarm_data[ALARM_FLAG_BYTE_OFFSET];
     alarms[offset + ALARM_HOUR_BYTE_OFFSET] = alarm_data[ALARM_HOUR_BYTE_OFFSET];
     alarms[offset + ALARM_MINUTE_BYTE_OFFSET] = alarm_data[ALARM_MINUTE_BYTE_OFFSET];
-    /*
     
     Lcd_chr_cp(Bcd2Dec(alarms[offset + ALARM_FLAG_BYTE_OFFSET]) / 10 + 0x30);
     Lcd_chr_cp(Bcd2Dec(alarms[offset + ALARM_FLAG_BYTE_OFFSET]) % 10 + 0x30);
@@ -109,8 +138,7 @@ void update_alarm(char alarm_data[ALARM_PACKET_LENGTH]) {
     Lcd_chr_cp(Bcd2Dec(alarms[offset + ALARM_HOUR_BYTE_OFFSET]) % 10 + 0x30); 
     Lcd_chr_cp(Bcd2Dec(alarms[offset + ALARM_MINUTE_BYTE_OFFSET]) / 10 + 0x30);
     Lcd_chr_cp(Bcd2Dec(alarms[offset + ALARM_MINUTE_BYTE_OFFSET]) % 10 + 0x30);
-    */
-
+    
     Lcd_out(2, 1, "SA_");
     Lcd_chr_cp(Bcd2Dec(alarm_data[0]) / 10 + 0x30);
     Lcd_chr_cp(Bcd2Dec(alarm_data[0]) % 10 + 0x30);
@@ -121,14 +149,13 @@ void update_alarm(char alarm_data[ALARM_PACKET_LENGTH]) {
     Lcd_chr_cp('|');
     delay_ms(2000);
   }
-
   
-
 
   PORTB = 0x0F;
   delay_ms(500);
   PORTB = 0x00;
   delay_ms(500);
+  */
 }
 
 // Activates Dispensers by reading packet flags
@@ -152,53 +179,30 @@ void check_alarms() {
   hours = read_ds1307(0xD0, 2);    // reads hours from DS1307 in BCD
 
   if (seconds == 0x00) {
-    Lcd_out(2, 1, "Estamos en 0 segundos");
 
     for (alarm_index = 0; alarm_index <= MAX_ALARMS; alarm_index++) {
       char current_alarm_hour;
       char current_alarm_minute;
       char otro;
 
-      Lcd_out(2, 1, "CA");
-      Lcd_chr_cp(alarm_index + 0x30);
-      Lcd_chr_cp(((alarms[alarm_index + ALARM_FLAG_BYTE_OFFSET] >> 7) & 0x01) + 0x30);
-      Lcd_chr_cp(((alarms[alarm_index + ALARM_FLAG_BYTE_OFFSET] >> 6) & 0x01) + 0x30);
-      Lcd_chr_cp(((alarms[alarm_index + ALARM_FLAG_BYTE_OFFSET] >> 5) & 0x01) + 0x30);
-      Lcd_chr_cp(((alarms[alarm_index + ALARM_FLAG_BYTE_OFFSET] >> 4) & 0x01) + 0x30);
-      Lcd_chr_cp(((alarms[alarm_index + ALARM_FLAG_BYTE_OFFSET] >> 3) & 0x01) + 0x30);
-      Lcd_chr_cp(((alarms[alarm_index + ALARM_FLAG_BYTE_OFFSET] >> 2) & 0x01) + 0x30);
-      Lcd_chr_cp(((alarms[alarm_index + ALARM_FLAG_BYTE_OFFSET] >> 1) & 0x01) + 0x30);
-      Lcd_chr_cp(((alarms[alarm_index + ALARM_FLAG_BYTE_OFFSET] >> 0) & 0x01) + 0x30);
-      delay_ms(1000);
+      // Gets the current alarm flags data
+      char current_alarm_flags = alarms[alarm_index + ALARM_FLAG_BYTE_OFFSET];
+
+      writeBytesToLCD(current_alarm_flags);
+      writeBCDToLCD(current_alarm_flags);
 
       if (!(alarms[alarm_index + ALARM_FLAG_BYTE_OFFSET] & ALARM_FLAG_BYTE_OFFSET)) {
         continue;
       }
 
-      Lcd_out(2, 1, "alrm actv");
-      Lcd_chr_cp(alarm_index + 0x30);
-      delay_ms(1000);
-
       // Gets the alarm minute and hour
       current_alarm_hour = alarms[alarm_index + ALARM_HOUR_BYTE_OFFSET];
       current_alarm_minute = alarms[alarm_index + ALARM_HOUR_BYTE_OFFSET];
 
-      Lcd_out(2, 1, "t:");
-      Lcd_chr_cp(Bcd2Dec(current_alarm_hour) / 10 + 0x30);
-      Lcd_chr_cp(Bcd2Dec(current_alarm_minute) % 10 + 0x30);
-      Lcd_chr_cp(Bcd2Dec(current_alarm_minute) / 10 + 0x30);
-      Lcd_chr_cp(Bcd2Dec(current_alarm_minute) % 10 + 0x30);
-      Lcd_chr_cp(',');
-      Lcd_chr_cp(Bcd2Dec(hours) / 10 + 0x30);
-      Lcd_chr_cp(Bcd2Dec(hours) % 10 + 0x30);
-      Lcd_chr_cp(Bcd2Dec(minutes) / 10 + 0x30);
-      Lcd_chr_cp(Bcd2Dec(minutes) % 10 + 0x30);
-      delay_ms(1000);
-
       // Checks if the hour and minute matches with the alarm data
       if (current_alarm_hour == hours && current_alarm_minute == minutes) {
         // Gets the current alarm flags data
-        char current_alarm_flags = alarms[alarm_index + ALARM_FLAG_BYTE_OFFSET];
+        // char current_alarm_flags = alarms[alarm_index + ALARM_FLAG_BYTE_OFFSET];
         // Gets enabled motor flags
         current_alarm_flags = (current_alarm_flags >> 1) & 0x07;
 
@@ -323,14 +327,18 @@ void main() {
   fakeAlarm[1] = 0x11; 
   fakeAlarm[2] = 0x35;
 
+  writeBCDToLCD(fakeAlarm[0]);
+  writeBytesToLCD(fakeAlarm[0]);
+
   // sends_data_to_lcd(fakeAlarm[0], fakeAlarm[1], fakeAlarm[2]);
   delay_ms(1500);
   UART1_Write_Text("Enviando alarma");
+
   update_alarm(fakeAlarm);
   // updateSentinel();
 
-  writeBytesToLCD(fakeAlarm[0]);
-  writeBCDToLCD(fakeAlarm[0]);
+  // writeBytesToLCD(fakeAlarm[0]);
+  // writeBCDToLCD(fakeAlarm[0]);
   // writeBCDToLCD(0x23);
   
   // Alarm read loop
