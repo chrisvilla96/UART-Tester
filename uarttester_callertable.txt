@@ -1,17 +1,112 @@
 main
 	__CC2DW
 		____DoICP
+	initialize_alarms
 	UART1_Init
 	UART1_Write_Text
 		UART1_Write
-	UART1_Data_Ready
-	UART1_Read_Text
-		UART1_Data_Ready
-		UART1_Read
-	strlen
+	Lcd_Init
+		Delay_5500us
+		Delay_1us
+	Lcd_Cmd
+		Delay_1us
+		Delay_5500us
+		Delay_50us
+	I2C1_Init
+	set_data_ds1307
+		Dec2Bcd
+			Div_8X8_U
+		write_ds1307
+			I2C1_Start
+				I2C1_Is_Idle
+				____DoIFC
+			I2C1_Wr
+				____DoIFC
+			I2C1_Stop
 	update_alarm
 		Mul_8X8_U
+		Lcd_Out
+			Lcd_Cmd
+				Delay_1us
+				Delay_5500us
+				Delay_50us
+			Lcd_Chr_CP
+				Lcd_Cmd
+					Delay_1us
+					Delay_5500us
+					Delay_50us
 		Bcd2Dec
 			Mul_8X8_U
+		Div_8X8_U
+		Lcd_Chr_CP
+			Lcd_Cmd
+				Delay_1us
+				Delay_5500us
+				Delay_50us
+	writeBytesToLCD
+		Lcd_Out
+			Lcd_Cmd
+				Delay_1us
+				Delay_5500us
+				Delay_50us
+			Lcd_Chr_CP
+				Lcd_Cmd
+					Delay_1us
+					Delay_5500us
+					Delay_50us
+		Lcd_Cmd
+			Delay_1us
+			Delay_5500us
+			Delay_50us
+		Lcd_Chr_CP
+			Lcd_Cmd
+				Delay_1us
+				Delay_5500us
+				Delay_50us
+	writeBCDToLCD
+		Lcd_Out
+			Lcd_Cmd
+				Delay_1us
+				Delay_5500us
+				Delay_50us
+			Lcd_Chr_CP
+				Lcd_Cmd
+					Delay_1us
+					Delay_5500us
+					Delay_50us
+		Lcd_Chr_CP
+			Lcd_Cmd
+				Delay_1us
+				Delay_5500us
+				Delay_50us
 	check_alarms
+		read_ds1307
+			I2C1_Start
+				I2C1_Is_Idle
+				____DoIFC
+			I2C1_Wr
+				____DoIFC
+			I2C1_Repeated_Start
+				____DoIFC
+			I2C1_Rd
+				____DoIFC
+			I2C1_Stop
+		Lcd_Out
+			Lcd_Cmd
+				Delay_1us
+				Delay_5500us
+				Delay_50us
+			Lcd_Chr_CP
+				Lcd_Cmd
+					Delay_1us
+					Delay_5500us
+					Delay_50us
+		Lcd_Chr_CP
+			Lcd_Cmd
+				Delay_1us
+				Delay_5500us
+				Delay_50us
+		Bcd2Dec
+			Mul_8X8_U
+		Div_8X8_U
 		activate_dispensers
