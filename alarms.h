@@ -1,0 +1,6 @@
+#define MAX_ALARMS 10
+#define ALARM_BYTE_LENGTH  3
+
+#define ALARM_FLAG_BYTE 0
+#define ALARM_HOUR_BYTE 1
+#define ALARM_MINUTE_BYTE 2
