@@ -1,6 +1,7 @@
 #include "constants.h" 
 #include "macros.h"
 #include "utils.h"
+#include "timeModule.h"
 #include "alarms.h"
 
 char alarms[MAX_ALARMS * ALARM_BYTE_LENGTH];
@@ -15,7 +16,26 @@ void initializeLCDModule() {
 void initializaDS1307Module() {
 }
 
-void setAlarms() {}
+void dumpAlarms() {
+  char index;
+  for (index = 0; index < MAX_ALARMS; index++) {
+    char offset = index * ALARM_BYTE_LENGTH;
+    writeBytesToLCD(0b11111111);
+    writeBytesToLCD(alarms[offset + ALARM_FLAG_BYTE]);
+    writeBytesToLCD(alarms[offset + ALARM_HOUR_BYTE]);
+    writeBytesToLCD(alarms[offset + ALARM_MINUTE_BYTE]);
+  }
+}
+
+
+void setAlarm(char index, char flags, char bcd_hour, char bcd_minute) {
+  if (0 <= index && index <= MAX_ALARMS) {
+    char offset = index * ALARM_BYTE_LENGTH;
+    alarms[offset + ALARM_FLAG_BYTE] = flags;
+    alarms[offset + ALARM_HOUR_BYTE] = bcd_hour;
+    alarms[offset + ALARM_MINUTE_BYTE] = bcd_minute;
+  }
+}
 
 void initializeAlarms() {
   char index;
@@ -30,15 +50,23 @@ void initialize() {
   char totalIterations = MAX_ALARMS * ALARM_BYTE_LENGTH;
   initializeLCDModule();
   initializeAlarms();
+  setAlarm(
+    1,  
+    ALARM_FLAG_DISPENSER_2 | ALARM_FLAG_DISPENSER_0 | ALARM_FLAG_ACTIVE, 
+    0x12, 
+    0x34
+  );
+  dumpAlarms();
+}
+
+void checkAlarms() {
 }
 
 void mainLoop() {
   char stuff = 0b01011101;
   char index = 0;
 
-  writeBytesToLCD(stuff);
-  writeBytesToLCD(MS_NIBBLE(stuff));
-  writeBytesToLCD(LS_NIBBLE(stuff));
+  checkAlarms();
 }
 
 void finalize() {}
