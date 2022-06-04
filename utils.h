@@ -12,7 +12,11 @@ sbit LCD_D5_Direction at TRISD5_bit;
 sbit LCD_D6_Direction at TRISD6_bit;
 sbit LCD_D7_Direction at TRISD7_bit;
 
+#define writeBytesB(X) 1
+
 void writeBCDToLCD(char);
 void writeBCDToLCDTimed(char, int);
 void writeBytesToLCD(char);
-void writeBytesToLCDTimed(char ref, int millis);
+void writeBytesToLCDTimed(char, int);
+void writeTextToLCD(char *);
+

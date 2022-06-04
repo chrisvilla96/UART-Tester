@@ -5,6 +5,9 @@
 #include "alarms.h"
 
 char alarms[MAX_ALARMS * ALARM_BYTE_LENGTH];
+char fakeHour = 0x12;
+char fakeMinute = 0x34;
+char fakeSeconds = 0;
 
 void initializeLCDModule() {
   Lcd_init();
@@ -15,6 +18,7 @@ void initializeLCDModule() {
 
 void initializaDS1307Module() {
 }
+
 
 void dumpAlarms() {
   char index;
@@ -56,17 +60,44 @@ void initialize() {
     0x12, 
     0x34
   );
-  dumpAlarms();
 }
 
 void checkAlarms() {
+  char alarmIndex;
+  
+  if (fakeSeconds != 0) return;
+
+  for (alarmIndex = 0; alarmIndex < MAX_ALARMS; alarmIndex++) {
+    char alarmOffset = alarmIndex * ALARM_BYTE_LENGTH;
+    char flags = LS_NIBBLE(alarms[alarmOffset + ALARM_FLAG_BYTE]);
+    char alarmActive = flags & ALARM_FLAG_ACTIVE;
+    char alarmHours, alarmMinutes;
+    writeTextToLCD("Indice ");
+    writeBCDToLCD(alarmIndex);
+
+    if (!alarmActive) continue;
+
+    alarmHours = alarms[alarmOffset + ALARM_HOUR_BYTE];
+    alarmMinutes = alarms[alarmOffset + ALARM_MINUTE_BYTE];
+
+    if (alarmHours == fakeHour && alarmMinutes == fakeMinute) {
+      writeTextToLCD("Alarma activa");
+      writeBCDToLCD(alarmIndex);
+      delay_ms(1000);
+    }
+  }
+
+  delay_ms(1000);
+  writeTextToLCD("");
 }
 
 void mainLoop() {
-  char stuff = 0b01011101;
-  char index = 0;
-
   checkAlarms();
+  fakeMinute++;
+  
+  if (fakeMinute > 59) {
+    fakeMinute = 0;
+  }
 }
 
 void finalize() {}

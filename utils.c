@@ -15,6 +15,12 @@ void writeBCDToLCDTimed(char ref, const int millis)
     delay_ms(1000);
 }
 
+void writeTextToLCD(char *text) {
+  Lcd_out(1,1, "                ");
+  Lcd_out(1,1, text);
+  delay_ms(1000);
+}
+
 void writeBCDToLCD(char ref)
 {
   writeBCDToLCDTimed(ref, 1000);
