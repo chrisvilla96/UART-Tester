@@ -41,12 +41,42 @@ void setAlarm(char index, char flags, char bcd_hour, char bcd_minute) {
   }
 }
 
+void activateDispenser(char flags) {
+  writeTextToLCD("Activo putos!");
+  writeBytesToLCD(flags);
+  writeBytesToLCD((flags & 0x0F));
+}
+
 void initializeAlarms() {
   char index;
   char totalIterations = MAX_ALARMS * ALARM_BYTE_LENGTH;
   for (index = 0; index < totalIterations; index++) {
     alarms[index] = 0x00;
   }
+}
+
+void checkAlarms() {
+  char alarmIndex;
+
+  if (fakeSeconds != 0) return;
+
+  for (alarmIndex = 0; alarmIndex < MAX_ALARMS; alarmIndex++) {
+    char alarmOffset = alarmIndex * ALARM_BYTE_LENGTH;
+    char flags = LS_NIBBLE(alarms[alarmOffset + ALARM_FLAG_BYTE]);
+    char alarmActive = flags & ALARM_FLAG_ACTIVE;
+    char alarmHours, alarmMinutes;
+  
+    if (!alarmActive) continue;
+
+    alarmHours = alarms[alarmOffset + ALARM_HOUR_BYTE];
+    alarmMinutes = alarms[alarmOffset + ALARM_MINUTE_BYTE];
+
+    if (alarmHours == fakeHour && alarmMinutes == fakeMinute) {
+      activateDispenser((ALARM_FLAG_ALL_DISPENSERS & flags) >> 0x01);
+    }
+  }
+
+  delay_ms(1000);
 }
 
 void initialize() {
@@ -62,44 +92,6 @@ void initialize() {
   );
 }
 
-void checkAlarms() {
-  char alarmIndex;
-  
-  if (fakeSeconds != 0) return;
-
-  for (alarmIndex = 0; alarmIndex < MAX_ALARMS; alarmIndex++) {
-    char alarmOffset = alarmIndex * ALARM_BYTE_LENGTH;
-    char flags = LS_NIBBLE(alarms[alarmOffset + ALARM_FLAG_BYTE]);
-    char alarmActive = flags & ALARM_FLAG_ACTIVE;
-    char alarmHours, alarmMinutes;
-    writeTextToLCD("Indice ");
-    writeBCDToLCD(alarmIndex);
-
-    if (!alarmActive) continue;
-
-    alarmHours = alarms[alarmOffset + ALARM_HOUR_BYTE];
-    alarmMinutes = alarms[alarmOffset + ALARM_MINUTE_BYTE];
-
-    if (alarmHours == fakeHour && alarmMinutes == fakeMinute) {
-      writeTextToLCD("Alarma activa");
-      writeBCDToLCD(alarmIndex);
-      delay_ms(1000);
-    }
-  }
-
-  delay_ms(1000);
-  writeTextToLCD("");
-}
-
-void mainLoop() {
-  checkAlarms();
-  fakeMinute++;
-  
-  if (fakeMinute > 59) {
-    fakeMinute = 0;
-  }
-}
-
 void finalize() {}
 
 void main() {
@@ -108,7 +100,14 @@ void main() {
 
   // Main application loop;
   while(TRUE) {
-    mainLoop();
+    checkAlarms();
+    // Leer lista de alarmas activas
+    // Enviar una por una al activador
+    fakeMinute++;
+    
+    if (fakeMinute > 59) {
+      fakeMinute = 0;
+    }
   }
 
   // Cleanup
