@@ -19,4 +19,4 @@ void writeBCDToLCDTimed(char, int);
 void writeBytesToLCD(char);
 void writeBytesToLCDTimed(char, int);
 void writeTextToLCD(char *);
-
+void sendsTimeDataToLCD(char second, char minute, char hour);

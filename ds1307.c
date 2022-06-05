@@ -46,44 +46,6 @@ void set_data_ds1307(
     write_ds1307(0xD0, 4, Dec2Bcd(week_day));
     write_ds1307(0xD0, 5, Dec2Bcd(year));
 
-    /*
-    int i;
-    second = Dec2Bcd(second);
-    minutos = Dec2Bcd(minutos);
-    hora = Dec2Bcd(hora);
-    dia = Dec2Bcd(dia);
-    semana = Dec2Bcd(semana);
-    mes = Dec2Bcd(mes);
-    ano = Dec2Bcd(ano);
-
-    for (i = 0; i <= 5; i++)
-    {
-        switch (i)
-        {
-        case 0:
-            write_ds1307(0xD0, i, second);
-            break;
-        case 1:
-            write_ds1307(0xD0, i, minutos);
-            break;
-        case 2:
-            write_ds1307(0xD0, i, hora);
-            break;
-        case 3:
-            write_ds1307(0xD0, i, dia);
-            break;
-        case 4:
-            write_ds1307(0xD0, i, semana);
-            break;
-        case 5:
-            write_ds1307(0xD0, i, mes);
-            break;
-        case 6:
-            write_ds1307(0xD0, i, ano);
-            break;
-        }
-    }
-    */
 }
 
 char RTC_Read_Clock_Tine_Element(char element)

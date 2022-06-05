@@ -46,3 +46,16 @@ void writeBytesToLCD(char ref)
 {
   writeBytesToLCDTimed(ref, 1000);
 }
+
+void sendsTimeDataToLCD(char second, char minute, char hour)
+{
+  Lcd_out(1, 1, "HORA: ");
+  Lcd_chr_cp(Bcd2Dec(hour) / 10 + 0x30);
+  Lcd_chr_cp(Bcd2Dec(hour) % 10 + 0x30);
+  Lcd_chr_cp(':');
+  Lcd_chr_cp(Bcd2Dec(minute) / 10 + 0x30);
+  Lcd_chr_cp(Bcd2Dec(minute) % 10 + 0x30);
+  Lcd_chr_cp(':');
+  Lcd_chr_cp(Bcd2Dec(second) / 10 + 0x30);
+  Lcd_chr_cp(Bcd2Dec(second) % 10 + 0x30);
+}
